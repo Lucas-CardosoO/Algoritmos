@@ -61,9 +61,13 @@ void vertices_heap :: bubble_up(int i = - 1){
     if(i == -1){
     	i = index - 1;
     }
-
+    cerr << "i = " << i << endl;
+    cerr << "id = " << heap[i].id << endl;
+    cerr << "peso = " << heap[i].peso << endl;
+    cerr << "id2 = " << heap[(i-1)/2].id << endl;
+    cerr << "peso2 = " << heap[(i-1)/2].peso << endl;
     while(i > 0 && heap[i].peso <= heap[(i-1)/2].peso){
-        if(heap[i].peso == heap[(i-1)/2].peso){
+        /*if(heap[i].peso == heap[(i-1)/2].peso){
             if(heap[i].id < heap[(i-1)/2].id){
                 permuta(i,(i-1)/2);
             }
@@ -71,7 +75,14 @@ void vertices_heap :: bubble_up(int i = - 1){
         } else {
             permuta(i,(i-1)/2);
             i = (i -1)/2;
-        }
+        }*/
+        permuta(i,(i-1)/2);
+        i = (i -1)/2;
+        cerr << "i = " << i << endl;
+        cerr << "id = " << heap[i].id << endl;
+        cerr << "peso = " << heap[i].peso << endl;
+        cerr << "id2 = " << heap[(i-1)/2].id << endl;
+        cerr << "peso2 = " << heap[(i-1)/2].peso << endl;
     }
 }
 
@@ -134,12 +145,37 @@ void vertices_heap :: heap_update(vertices p, int peso){
 	}
 }
 
+struct lista{
+    vertices* vertice;
+    int index;
+
+    lista(int n){
+        vertice = new vertices[n];
+        index = 0;
+    }
+
+    void list_insert(vertices v){
+        vertice[index] = v;
+        index++;
+    }
+};
+
+struct grafo{
+    lista* adjList;
+
+    grafo(int n){
+        adjList = new lista(n);
+    }
+
+    grafo_insert(vertices a, vertices b, int peso){
+        
+    }
+};
 
 
 
 
-
-int main(){
+/*int main(){
 	int n;
 	cin >> n;
 	vertices_heap heap = vertices_heap(n);
@@ -198,7 +234,6 @@ int main(){
     heap.heap_update(vertice3, 0);	
 
     cerr << "heap update: " << endl;
-    heap.heap_extract();
     for(int i = 0; i < n; i++){
         cerr << heap.heap[i].id << endl;
     }
@@ -207,4 +242,5 @@ int main(){
     for(int i = 0; i < n; i++){        
         cerr << i << ": " << heap.pos[i] << endl;
     }
-}
+}*/
+
