@@ -148,29 +148,76 @@ void vertices_heap :: heap_update(vertices p, int peso){
 struct lista{
     vertices* vertice;
     int index;
+    int tamanho;
 
-    lista(int n){
+    lista(int n = 1){
         vertice = new vertices[n];
         index = 0;
+        tamanho = n;
+    }
+
+    void list_double(){
+        tamanho *=2;
+        vertices* aux = new vertices[tamanho];
+        delete[] vertice;
+        vertice = aux;
     }
 
     void list_insert(vertices v){
+        if (index == tamanho){
+            list_double();
+        }
         vertice[index] = v;
         index++;
     }
 };
 
 struct grafo{
+    int qntVert;
     lista* adjList;
 
     grafo(int n){
-        adjList = new lista(n);
+        adjList = new lista[n]   ;
+        qntVert = n;
     }
 
-    grafo_insert(vertices a, vertices b, int peso){
-        
+    void grafo_insert(vertices a, vertices b, int peso){
+        a.peso = peso;
+        b.peso = peso;
+        adjList[a.id].list_insert(b);
+        adjList[b.id].list_insert(a);
     }
 };
+
+pair<int*, vertices*> dijkstra(grafo g, vertices v){
+    int tamanho = g.qntVert;
+    int* d = new int[tamanho]; 
+    memset(d, -1, 4*tamanho);
+    d[v.id] = 0; 
+    vertices* f = new vertices[tamanho];
+    vertices_heap heap = vertices_heap(tamanho);
+    
+    v.peso = 0;
+    heap.heap_insert(v);
+
+
+    //REVISE ISSOOOOOO!!!!!!!!!!!!!
+    for (int i = 0; i < tamanho; ++i){
+        vertices u = heap.heap_extract();
+        lista e = grafo.adjList[u.id];
+
+        for(int i = 0; i < e.index; i++){
+            if(d[u.id]+e[i].peso < d[e[i].id]){
+                d[e[i].id] = d[u.id] + e[i].peso;
+                f[e[i].id] = u;
+                heap_update(e[i], d[e[i].id]);
+            }
+        }
+    }
+
+
+    return make_pair(d, p);
+}
 
 
 
