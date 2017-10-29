@@ -60,12 +60,12 @@ void vertices_heap :: permuta(int a, int b){
 void vertices_heap :: bubble_up(int i = - 1){
     if(i == -1){
     	i = index - 1;
-    }
+    }/*
     cerr << "i = " << i << endl;
     cerr << "id = " << heap[i].id << endl;
     cerr << "peso = " << heap[i].peso << endl;
     cerr << "id2 = " << heap[(i-1)/2].id << endl;
-    cerr << "peso2 = " << heap[(i-1)/2].peso << endl;
+    cerr << "peso2 = " << heap[(i-1)/2].peso << endl;*/
     while(i > 0 && heap[i].peso <= heap[(i-1)/2].peso){
         /*if(heap[i].peso == heap[(i-1)/2].peso){
             if(heap[i].id < heap[(i-1)/2].id){
@@ -77,12 +77,13 @@ void vertices_heap :: bubble_up(int i = - 1){
             i = (i -1)/2;
         }*/
         permuta(i,(i-1)/2);
-        i = (i -1)/2;
+        
+        i = (i -1)/2;/*
         cerr << "i = " << i << endl;
         cerr << "id = " << heap[i].id << endl;
         cerr << "peso = " << heap[i].peso << endl;
         cerr << "id2 = " << heap[(i-1)/2].id << endl;
-        cerr << "peso2 = " << heap[(i-1)/2].peso << endl;
+        cerr << "peso2 = " << heap[(i-1)/2].peso << endl;*/
     }
 }
 
@@ -159,6 +160,9 @@ struct lista{
     void list_double(){
         tamanho *=2;
         vertices* aux = new vertices[tamanho];
+        for(int i = 0; i < index; i++){
+        	aux[i] = vertice[i];
+        }
         delete[] vertice;
         vertice = aux;
     }
@@ -189,6 +193,11 @@ struct grafo{
     }
 };
 
+struct distepre{
+	int* d;
+	vertices* f;	
+};
+
 pair<int*, vertices*> dijkstra(grafo g, vertices v){
     int tamanho = g.qntVert;
     int* d = new int[tamanho]; 
@@ -204,19 +213,69 @@ pair<int*, vertices*> dijkstra(grafo g, vertices v){
     //REVISE ISSOOOOOO!!!!!!!!!!!!!
     for (int i = 0; i < tamanho; ++i){
         vertices u = heap.heap_extract();
-        lista e = grafo.adjList[u.id];
+        lista e = g.adjList[u.id];
 
         for(int i = 0; i < e.index; i++){
-            if(d[u.id]+e[i].peso < d[e[i].id]){
-                d[e[i].id] = d[u.id] + e[i].peso;
-                f[e[i].id] = u;
-                heap_update(e[i], d[e[i].id]);
-            }
+        	if(d[e.vertice[i].id] == -1){
+        		d[e.vertice[i].id] = e.vertice[i].peso;
+        	} else {
+	            if(d[u.id]+e.vertice[i].peso < d[e.vertice[i].id]){
+	                d[e.vertice[i].id] = d[u.id] + e.vertice[i].peso;
+	                f[e.vertice[i].id] = u;
+	                heap.heap_update(e.vertice[i], d[e.vertice[i].id]);
+	            }
+	        }
         }
     }
 
+    distepre result;
+    result.d = d;
+    result.f = f;
 
-    return make_pair(d, p);
+    return make_pair(d,f);
+}
+
+int main(){
+	int n;
+	cin >> n;
+
+	grafo g = grafo(n);
+
+	vertices v1 = vertices(1);
+	vertices v2 = vertices(2);
+	vertices v3 = vertices(3);
+	vertices v4 = vertices(4);
+	vertices v5 = vertices(5);
+	vertices v6 = vertices(6);
+
+	g.grafo_insert(v1,v2,1);
+	g.grafo_insert(v1,v4,1);
+	g.grafo_insert(v3,v4,0);
+	g.grafo_insert(v5,v6,1);
+	g.grafo_insert(v6,v3,1);
+	g.grafo_insert(v6,v4,2);
+	/*
+	for(int i = 0; i < n; i++){
+		cerr << "i: " << i << endl;
+		for(int j = 0; j < g.adjList[i].index; j++){
+			cerr << "id: " << g.adjList[i].vertice[j].id << endl;
+			cerr << "peso: " << g.adjList[i].vertice[j].peso << endl;
+		}
+	}
+	*/
+
+	int* p;
+	vertices* f;
+	//distepre result;
+	pair<int*,vertices*> result = dijkstra(g,v1);
+	p = result.first;
+	f = result.second;
+
+	for (int i = 0; i < n; ++i){
+		cerr << "distancia: " << p[i] << endl;
+		cerr << "precursor: " << f[i].id << endl;
+	}
+
 }
 
 
