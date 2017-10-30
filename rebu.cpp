@@ -37,7 +37,7 @@ struct vertices_heap{
     void heapify(int i);
     vertices heap_extract();
     void permuta(int a, int b);
-    void heap_update(vertices p, int peso);
+    void heap_update(vertices p, int peso, int cost);
 };
 
 void vertices_heap :: double_array(){
@@ -69,15 +69,15 @@ void vertices_heap :: bubble_up(int i = - 1){
     cerr << "id2 = " << heap[(i-1)/2].id << endl;
     cerr << "peso2 = " << heap[(i-1)/2].peso << endl;*/
     while(i > 0 && heap[i].peso <= heap[(i-1)/2].peso){
-        /*if(heap[i].peso == heap[(i-1)/2].peso){
-            if(heap[i].id < heap[(i-1)/2].id){
+        if(heap[i].peso == heap[(i-1)/2].peso){
+            if(heap[i].cost < heap[(i-1)/2].cost){
                 permuta(i,(i-1)/2);
             }
             i = (i -1)/2;
         } else {
             permuta(i,(i-1)/2);
             i = (i -1)/2;
-        }*/
+        }
         permuta(i,(i-1)/2);
         
         i = (i -1)/2;/*
@@ -107,7 +107,7 @@ void vertices_heap :: heapify(int i){
 
     if(l < index && heap[l].peso <= heap[m].peso){
         if(heap[l].peso == heap[m].peso){
-            if(heap[l].id < heap[m].id){
+            if(heap[l].cost < heap[m].cost){
                 m = l;
             }
         } else {
@@ -117,7 +117,7 @@ void vertices_heap :: heapify(int i){
 
     if(r < index && heap[r].peso <= heap[m].peso){
         if(heap[r].peso == heap[m].peso){
-            if(heap[r].id < heap[m].id){
+            if(heap[r].cost < heap[m].cost){
                 m = r;
             }
         } else {
@@ -139,10 +139,11 @@ vertices vertices_heap :: heap_extract(){
     heapify(0);
     return r;
 }
-void vertices_heap :: heap_update(vertices p, int peso){
+void vertices_heap :: heap_update(vertices p, int peso, int cost){
 	if(pos[p.id] == -1){
 		heap_insert(p);
 	} else {
+        heap[pos[p.id]].cost = cost;
 		heap[pos[p.id]].peso = peso;
 		bubble_up(pos[p.id]);
 	}
@@ -198,7 +199,7 @@ struct vertices_heap_cost{
     void heapify(int i);
     vertices heap_extract();
     void permuta(int a, int b);
-    void heap_update(vertices p, int cost);
+    void heap_update(vertices p, int peso, int cost);
 };
 
 void vertices_heap_cost :: double_array(){
@@ -230,15 +231,15 @@ void vertices_heap_cost :: bubble_up(int i = - 1){
     cerr << "id2 = " << heap[(i-1)/2].id << endl;
     cerr << "peso2 = " << heap[(i-1)/2].peso << endl;*/
     while(i > 0 && heap[i].cost <= heap[(i-1)/2].cost){
-        /*if(heap[i].peso == heap[(i-1)/2].peso){
-            if(heap[i].id < heap[(i-1)/2].id){
+        if(heap[i].cost == heap[(i-1)/2].cost){
+            if(heap[i].peso < heap[(i-1)/2].peso){
                 permuta(i,(i-1)/2);
             }
             i = (i -1)/2;
         } else {
             permuta(i,(i-1)/2);
             i = (i -1)/2;
-        }*/
+        }
         permuta(i,(i-1)/2);
         
         i = (i -1)/2;/*
@@ -268,7 +269,7 @@ void vertices_heap_cost :: heapify(int i){
 
     if(l < index && heap[l].cost <= heap[m].cost){
         if(heap[l].cost == heap[m].cost){
-            if(heap[l].id < heap[m].id){
+            if(heap[l].peso < heap[m].peso){
                 m = l;
             }
         } else {
@@ -278,7 +279,7 @@ void vertices_heap_cost :: heapify(int i){
 
     if(r < index && heap[r].cost <= heap[m].cost){
         if(heap[r].cost == heap[m].cost){
-            if(heap[r].id < heap[m].id){
+            if(heap[r].peso < heap[m].peso){
                 m = r;
             }
         } else {
@@ -300,10 +301,11 @@ vertices vertices_heap_cost :: heap_extract(){
     heapify(0);
     return r;
 }
-void vertices_heap_cost :: heap_update(vertices p, int cost){
+void vertices_heap_cost :: heap_update(vertices p, int peso, int cost){
 	if(pos[p.id] == -1){
 		heap_insert(p);
 	} else {
+        heap[pos[p.id]].peso = peso;
 		heap[pos[p.id]].cost = cost;
 		bubble_up(pos[p.id]);
 	}
@@ -326,12 +328,12 @@ struct grafo{
         adjList[b.id].list_insert(a);
     }
 };
-
+/*
 struct distepre{
 	int* d;
 	vertices* f;	
 };
-
+/*
 pair<int*, vertices*> dijkstra(grafo g, vertices v){
     int tamanho = g.qntVert;
     int* d = new int[tamanho]; 
@@ -354,7 +356,7 @@ pair<int*, vertices*> dijkstra(grafo g, vertices v){
         lista e = g.adjList[u.id];
         /*for(int j; j < e.index; j++){
         	cerr << j << ": " << e.vertice[j].id << endl;
-        }*/
+        }
 
         for(int j = 0; j < e.index; j++){
         	if(d[e.vertice[j].id] == -1){
@@ -379,10 +381,10 @@ pair<int*, vertices*> dijkstra(grafo g, vertices v){
     distepre result;
     result.d = d;
     result.f = f;
-    */
+    
 
     return make_pair(d,f);
-}
+}*/
 
 pair<int*, int*> dijkstra_short(grafo g, vertices v, int* citycost){
     int tamanho = g.qntVert;
@@ -408,15 +410,21 @@ pair<int*, int*> dijkstra_short(grafo g, vertices v, int* citycost){
         		cost[e.vertice[j].id] = cost[u.id] + e.vertice[j].peso*citycost[u.cidade];
         		d[e.vertice[j].id] = d[u.id] + e.vertice[j].peso;
         		f[e.vertice[j].id] = u;
-        		heap.heap_update(e.vertice[j], d[e.vertice[j].id]);
+        		heap.heap_update(e.vertice[j], d[e.vertice[j].id], cost[e.vertice[j].id]);
         	} else {
-        		
-	            if(d[u.id]+e.vertice[j].peso < d[e.vertice[j].id]){
+                if(d[u.id]+e.vertice[j].peso == d[e.vertice[j].id]){
+                    if(cost[u.id] + e.vertice[j].peso*citycost[u.cidade] < cost[e.vertice[j].id]){
+                        cost[e.vertice[j].id] = cost[u.id] + e.vertice[j].peso*citycost[u.cidade];
+                        d[e.vertice[j].id] = d[u.id] + e.vertice[j].peso;
+                        f[e.vertice[j].id] = u;
+                        heap.heap_update(e.vertice[j], d[e.vertice[j].id], cost[e.vertice[j].id]);    
+                    }
+                } else if(d[u.id]+e.vertice[j].peso < d[e.vertice[j].id]){
 	            	cost[e.vertice[j].id] = cost[u.id] + e.vertice[j].peso*citycost[u.cidade];
 	                d[e.vertice[j].id] = d[u.id] + e.vertice[j].peso;
 	                f[e.vertice[j].id] = u;
 	                
-	                heap.heap_update(e.vertice[j], d[e.vertice[j].id]);
+	                heap.heap_update(e.vertice[j], d[e.vertice[j].id], cost[e.vertice[j].id]);
 	                
 	            }
 	        }
@@ -451,15 +459,21 @@ pair<int*, int*> dijkstra_cheap(grafo g, vertices v, int* citycost){
         		cost[e.vertice[j].id] = cost[u.id] + e.vertice[j].peso*citycost[u.cidade];
         		d[e.vertice[j].id] = d[u.id] + e.vertice[j].peso;
         		f[e.vertice[j].id] = u;
-        		heap.heap_update(e.vertice[j], d[e.vertice[j].id]);
+        		heap.heap_update(e.vertice[j], d[e.vertice[j].id], cost[e.vertice[j].id]);
         	} else {
-        		
-	            if(cost[u.id] + e.vertice[j].peso*citycost[u.cidade] < cost[e.vertice[j].id]){
+        		if(cost[u.id] + e.vertice[j].peso*citycost[u.cidade] == cost[e.vertice[j].id]){
+                    if(d[u.id]+e.vertice[j].peso < d[e.vertice[j].id]){
+                        cost[e.vertice[j].id] = cost[u.id] + e.vertice[j].peso*citycost[u.cidade];
+                        d[e.vertice[j].id] = d[u.id] + e.vertice[j].peso;
+                        f[e.vertice[j].id] = u;
+                        heap.heap_update(e.vertice[j], d[e.vertice[j].id], cost[e.vertice[j].id]);    
+                    }
+                } else if(cost[u.id] + e.vertice[j].peso*citycost[u.cidade] < cost[e.vertice[j].id]){
 	            	cost[e.vertice[j].id] = cost[u.id] + e.vertice[j].peso*citycost[u.cidade];
 	                d[e.vertice[j].id] = d[u.id] + e.vertice[j].peso;
 	                f[e.vertice[j].id] = u;
 	                
-	                heap.heap_update(e.vertice[j], cost[e.vertice[j].id]);
+	                heap.heap_update(e.vertice[j], d[e.vertice[j].id], cost[e.vertice[j].id]);
 	                
 	            }
 	        }
@@ -628,6 +642,15 @@ int main(){
 		g.grafo_insert(vertice[x], vertice[y], z);
 	}
 
+    cerr << "grafo: " << endl;
+    for (int i = 0; i < g.qntVert; ++i){
+        cerr << "vertice [" << i << "]:" << endl;
+        for (int j = 0; j < g.adjList[i].index; ++j){
+            cerr << g.adjList[i].vertice[j].id << " ";
+        } 
+        cerr << endl;
+    }
+
 	string comando;
 
 	while(cin >> comando){
@@ -652,10 +675,25 @@ int main(){
 			}
 
 			cout << dist[d] << " " << cost[d] << endl;
+
+            cerr << "dist:" << endl;
+            for(int i = 0; i < n; i++){
+                cerr << "v[" << i << "]" << dist[i] << endl;
+            }
+
+            cerr << "cost:" << endl;
+            for(int i = 0; i < n; i++){
+                cerr << "v[" << i << "]" << cost[i] << endl;
+            }
 		} else if(comando == "UPDA"){
 			int j, r;
 			cin >> j >> r;
 			tarifas[j] = r;
+
+            cerr << "tarifas" << endl;
+            for (int i = 0; i < n; ++i){
+                cerr << i << tarifas[i] << endl;
+            }
 		}
 	}
 
