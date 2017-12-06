@@ -1,43 +1,63 @@
 #include <iostream>
 
 using namespace std;
+// Norte = Descer e Sul = Subir
 
-struct labyrinth{
-	int size;
-	string** grid;
-
-	labyrinth(int size){
-		this->size = 2*size + 1;
-		grid = new string*[size];
-		for (int i = 0; i < size; ++i){
-			grid[i] = new string[size];
-		}
-
-		for (int i = 0; i < size; ++i){
-			for (int j = 0; j < size; ++j){
-				if((i==0 && j == 0) || (i==size-1 && j==0) || (i==0 && j==size-1) || (i==size-1 && j==size-1)){
-					grid[i][j] = "+";			
-				} else if(i==0 || i == size-1){
-					grid[i][j] = "-";
-				} else if(j==0 || j ==size-1){
-					grid[i][j] = "|";
-				} else{
-					grid[i][j] = " ";
-				}
-			}
-		}
-	}
+struct posHeightPath{
+	int x;
+	int y;
+	int height;
+	string path;
 };
 
+posHeightPath greedy(int x, int y, int** labyrinth){
+
+}
+
 int main(){
-	labyrinth lab = labyrinth(2);
-	// cout<< lab.grid[0][0] << " ";
-	// for (int i = 0; i < lab.size; ++i){
-	// 	for (int j = 0; j < lab.size; ++j){
-	// 		cout<< lab.grid[i][j] << " ";
-	// 		if(j == lab.size - 1){
-	// 			cout << endl;
-	// 		}
-	// 	}
-	// }
+	int** labyrinth;
+	int m;
+	int height;
+
+	cin >> m;
+
+	labyrinth = new int*[2*m];
+	for (int i = 0; i < 2*m; ++i){
+		labyrinth[i] = new int[2*m];
+	}
+
+	for (int i = 0; i < 2*m; i++){
+		for(int j = 0; j < 2*m; j++){
+			labyrinth[i][j] = 0;
+		}
+	}
+
+	for (int i = 0; i < 2*m; i+=2){
+		for(int j = 0; j < 2*m; j+=2){
+			cin >> height;
+			labyrinth[i][j] = height;
+		}
+	}
+
+	int w;
+
+	for (int i = 0; i < w; ++i){
+		int x1,y1,x2,y2;
+		cin >> x1 >> y1 >> x2 >> y2;
+		if(x1 == x2){
+			labyrinth[2*x1][2*y1 + 1] = -1;
+		} else if (y1 == y2){
+			labyrinth[2*x1 +1][2*y1] = -1;
+		}
+	}
+
+	int r;
+	cin >> r;
+
+	int k;
+	cin >> k;
+
+	for (int i = 0; i < k; ++i){
+		
+	}
 }
