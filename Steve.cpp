@@ -1,17 +1,67 @@
 #include <iostream>
 
 using namespace std;
-// Norte = Descer e Sul = Subir
+// Norte = Descer e Sul = Subir; Leste-Direira; Oeste-Esquerda
 
 struct posHeightPath{
 	int x;
 	int y;
 	int height;
 	string path;
+
+	posHeightPath(int x, int y, int height, string path){
+		this->x = x;
+		this->y = y;
+		this->height = height;
+		this->path = path;
+	}
+
 };
 
-posHeightPath greedy(int x, int y, int** labyrinth){
+posHeightPath greedy(int x, int y, int** labyrinth, int size){
+	string path = "";
+	while(true){
+		int height = 0, heightN = 0, heightS = 0, heightL = 0, heightO = 0;
+		int xbig = x, ybig = y;
+		height = labyrinth[2*x][2*y];
+		//Norte
+		if((x != size - 1) && (labyrinth[2*x+1][2*y] != -1)){
+			heightN = labyrinth[2*x+2][2*y];
+		}
+		//Leste
+		if((y != size - 1) && (labyrinth[2*x][2*y+1] != -1)){
+			heightL = labyrinth[2*x][2*y+2];
+		}
+		//Sul
+		if((x != 0) && (labyrinth[2*x-1][2*y] != -1)){
+			heightS = labyrinth[2*x-2][2*y];
+		}
+		//Oeste
+		if((y != 0) && (labyrinth[2*x][2*y-1] != -1)){
+			heightO = labyrinth[2*x][2*y-2];
+		}
 
+		if ((heightN > height) && (heightN >= heightL) && (heightN >= heightO) && (heightN >= heightS)){
+			x = x+1;
+			y = y;
+			path = path + "N";
+		} else if((heightL > height) && (heightL >= heightO) && (heightL >= heightS)){
+			x = x;
+			y = y+1;
+			path = path + "L";
+		} else if ((heightS > height) && (heightS >= heightO)){
+			x = x-1;
+			y = y;
+			path = path + "S"
+		} else if(heightO > height){
+			x = x;
+			y = y-1;
+			path = path + "O";
+		} else {
+			return posHeightPath(x, y, height, path);
+		}
+
+	}
 }
 
 int main(){
