@@ -8,15 +8,18 @@ struct posHeightPath{
 	int y;
 	int height;
 	string path;
+	bool** beenThere;
 
-	posHeightPath(int x, int y, int height, string path){
+	posHeightPath(int x = -1, int y = -1, int height = 0, string path = "", bool** beenThere = new bool*[1]){
 		this->x = x;
 		this->y = y;
 		this->height = height;
 		this->path = path;
+		this->beenThere = beenThere;
 	}
 
 };
+
 
 posHeightPath greedy(int x, int y, int** labyrinth, int size){
 	string path = "";
@@ -52,16 +55,68 @@ posHeightPath greedy(int x, int y, int** labyrinth, int size){
 		} else if ((heightS > height) && (heightS >= heightO)){
 			x = x-1;
 			y = y;
-			path = path + "S"
+			path = path + "S";
 		} else if(heightO > height){
 			x = x;
 			y = y-1;
 			path = path + "O";
-		} else {
-			return posHeightPath(x, y, height, path);
+		} else 	{
+			bool** beenThere = new bool*[1];
+			beenThere[0] = new bool[1];
+			return posHeightPath(x, y, height, path, beenThere);
 		}
 
 	}
+}
+
+posHeightPath greedy3theDFS(int x, int y, int** labyrinth, int size, string path, bool** beenThere){
+	int height = 0, heightN = 0, heightS = 0, heightL = 0, heightO = 0;
+	string pathN = "", pathL = "", pathS = "", pathO = "";
+	posHeightPath north, east, south, west; 
+	beenThere[x][y] = true;
+	height = labyrinth[2*x][2*y];
+	
+	// North
+	if((x != size - 1) && (labyrinth[2*x+1][2*y] != -1) && !beenThere[x+1][y]){
+		pathN = path + "N";
+		north = greedy3theDFS(x+1,y, labyrinth, size, pathN, beenThere);
+		beenThere = north.beenThere;
+		heightN = north.height;
+	}
+	// East
+	if((y != size - 1) && (labyrinth[2*x][2*y+1] != -1) && !beenThere[x][y+1]){
+		pathL = path + "L";
+		east = greedy3theDFS(x,y+1, labyrinth, size, pathL, beenThere);
+		beenThere = east.beenThere;
+		heightL = east.height;
+	}
+	// South
+	if((x != 0) && (labyrinth[2*x-1][2*y] != -1) && !beenThere[x-1][y]){
+		pathS = path + "S";
+		south = greedy3theDFS(x-1,y, labyrinth, size, pathS, beenThere);
+		beenThere = south.beenThere;
+		heightS = south.height;
+	}
+	// West
+	if((y != 0) && (labyrinth[2*x][2*y-1] != -1) && !beenThere[x][y-1]){
+		pathO = path + "O";
+		west = greedy3theDFS(x,y-1, labyrinth, size, pathO, beenThere);
+		beenThere = west.beenThere;
+		heightO = west.height;
+	}
+
+	if ((heightN > height) && (heightN >= heightL) && (heightN >= heightO) && (heightN >= heightS)){
+		return north;
+	} else if((heightL > height) && (heightL >= heightO) && (heightL >= heightS)){
+		return east;
+	} else if ((heightS > height) && (heightS >= heightO)){
+		return south;
+	} else if(heightO > height){
+		return west;
+	} else {
+		return posHeightPath(x, y, height, path, beenThere);
+	}
+
 }
 
 int main(){
@@ -108,6 +163,9 @@ int main(){
 	cin >> k;
 
 	for (int i = 0; i < k; ++i){
-		
+		int x, y;
+		cin >> x >> y;
+		posHeightPath answer = greedy(x,y,labyrinth,2*m);
+		cout << "caso " << k << ":" << endl << answer.path << "=" << answer.height << endl;
 	}
 }
